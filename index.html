@@ -1,0 +1,228 @@
+oldal<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>Kő Papír Olló</title>
+
+<style>
+
+body{
+    background-image:url("hatter.png");
+    font-family:Arial;
+    text-align:center;
+}
+
+.egesz{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items:center;
+}
+h2{color:white;}
+
+.oldal{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+}
+
+.kozep{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:20px;
+}
+
+.kivalasztottak{
+    width:250px;
+    height:250px;
+    border:3px solid rgb(44, 44, 44);
+
+}
+
+.valasztott img{
+    width:200px;
+    margin:10px;
+    cursor:pointer;
+    transition:0.2s;
+    display:flex;
+    flex-direction:column;
+}
+
+.valasztott img:hover{
+    transform:scale(1.1);
+}
+
+.hpcsik{
+    display:flex;
+}
+
+.hpcsik div{
+    width:40px;
+    height:15px;
+    background:green;
+}
+.hpcsik div.lost{
+    background:red;
+}
+.boxosok{
+    display:flex;
+    gap:40px;
+}
+</style>
+</head>
+<body>
+<h1>Kő Papír Olló</h1>
+
+<div class="egesz">
+    <div class="oldal">
+        <h2>Játékos</h2>
+
+        <div class="hpcsik" id="embiElet"></div>
+
+        <div class="valasztott">
+            <img src="ko.png" onclick="play('ko')">
+            <img src="papir.png" onclick="play('papir')">
+            <img src="ollo.png" onclick="play('ollo')">
+        </div>
+    </div>
+    <div class="kozep">
+
+    <div class="boxosok">
+        <div class="kivalasztottak" id="embie"></div>
+        <div class="kivalasztottak" id="gepe"></div>
+    </div>
+
+    <div id="status">Válassz!</div>
+    <button onclick="resetGame()">Új játék</button>
+
+</div>
+
+    <div class="oldal">
+        <h2>Gép</h2>
+
+        <div class="hpcsik" id="gepElet"></div>
+
+        <div class="valasztott">
+            <img src="ko.png">
+            <img src="papir.png">
+            <img src="ollo.png">
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+let embiHP = 5;
+let gepHP = 5;
+let gameOver = false;
+
+function createBars(){
+
+    const embiElet = document.getElementById("embiElet");
+    const gepElet = document.getElementById("gepElet");
+
+    embiElet.innerHTML = "";
+    gepElet.innerHTML = "";
+
+    for(let i=0;i<5;i++){
+        const p = document.createElement("div");
+        p.className = "hp";
+        embiElet.appendChild(p);
+
+        const c = document.createElement("div");
+        c.className = "hp";
+        gepElet.appendChild(c);
+    }
+}
+
+function updateBars(){
+
+    const p = document.querySelectorAll("#embiElet .hp");
+    const c = document.querySelectorAll("#gepElet .hp");
+
+    for(let i=0;i<5;i++){
+
+        if(i >= embiHP){
+            p[i].classList.add("lost");
+        }else{
+            p[i].classList.remove("lost");
+        }
+
+        if(i >= gepHP){
+            c[i].classList.add("lost");
+        }else{
+            c[i].classList.remove("lost");
+        }
+    }
+}
+
+function play(embi){
+
+    if(gameOver) return;
+
+    const options = ["ko","papir","ollo"];
+    const gep = options[Math.floor(Math.random()*3)];
+
+    let text = "Te: "+embi+" | Gép: "+gep+"<br>";
+
+    if(embi === gep){
+        text += "Döntetlen!";
+    }
+    else if(
+        (embi==="ko" && gep==="ollo") ||
+        (embi==="papir" && gep==="ko") ||
+        (embi==="ollo" && gep==="papir")
+    ){
+        gepHP--;
+        text += "Te nyerted a kört!";
+    }
+    else{
+        embiHP--;
+        text += "A gép nyerte a kört!";
+    }
+
+    updateBars();
+
+    if(embiHP === 0){
+        text += "<br><br>A GÉP MEGNYERTE A MECCSET!";
+        gameOver = true;
+    }
+
+    if(gepHP === 0){
+        text += "<br><br>MEGNYERTED A MECCSET!";
+        gameOver = true;
+    }
+
+    document.getElementById("status").innerHTML = text;
+    
+    document.getElementById("embie").innerHTML =
+    '<img src="'+embi+'.png" width="250">';
+
+    document.getElementById("gepe").innerHTML =
+    '<img src="'+gep+'.png" width="250">';
+}
+
+function resetGame(){
+
+    embiHP = 5;
+    gepHP = 5;
+    gameOver = false;
+
+    createBars();
+    updateBars();
+
+    document.getElementById("status").innerHTML = "Válassz!";
+
+    document.getElementById("embie").innerHTML = "";
+    document.getElementById("gepe").innerHTML = "";
+}
+
+createBars();
+updateBars();
+
+</script>
+
+</body>
+</html>
